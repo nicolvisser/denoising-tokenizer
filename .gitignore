@@ -1,0 +1,12 @@
+*.whl
+__pycache__
+
+logs/
+checkpoints/
+
+test/
+test_*.py
+test_*.ipynb
+
+*.old.py
+*.old.ipynb
