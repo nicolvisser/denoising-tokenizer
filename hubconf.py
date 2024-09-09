@@ -20,15 +20,14 @@ def tokenizer(
     tag: str,
     progress: bool = True,
 ) -> TokenizerModel:
-    response = requests.get(
-        f"https://github.com/nicolvisser/denoising-tokenizer/releases/download/{tag}/{CONFIG_FILES[tag]}.json",
-    )
+    config_url = f"https://github.com/nicolvisser/denoising-tokenizer/releases/download/{tag}/{CONFIG_FILES[tag]}"
+    response = requests.get(config_url)
+    if response.status_code != 200:
+        raise ValueError(f"Failed to download {config_url}")
     config = response.json()
     model_args = TokenizerModelArgs.from_dict(config)
     model = TokenizerModel(model_args)
-    checkpoint = torch.hub.load_state_dict_from_url(
-        f"https://github.com/nicolvisser/denoising-tokenizer/releases/download/{tag}/{CHECKPOINT_FILES[tag]}.pth",
-        progress=progress,
-    )
+    checkpoint_url = f"https://github.com/nicolvisser/denoising-tokenizer/releases/download/{tag}/{CHECKPOINT_FILES[tag]}"
+    checkpoint = torch.hub.load_state_dict_from_url(checkpoint_url, progress=progress)
     model.load_state_dict(checkpoint)
     return model
