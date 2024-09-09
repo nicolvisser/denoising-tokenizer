@@ -30,4 +30,9 @@ def _tokenizer(
 
 
 def tokenizer(tag=str, progress: bool = True) -> TokenizerModel:
-    return _tokenizer(tag, progress)
+    return torch.hub.load(
+        f"nicolvisser/denoising-tokenizer:{tag}",
+        "_tokenizer",
+        tag=tag,
+        trust_repo=True,
+    )
