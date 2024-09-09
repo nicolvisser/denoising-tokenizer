@@ -37,7 +37,7 @@ train_args = TokenizerTrainingArgs(
         "/mnt/wsl/nvme/data/LibriSpeech/features/wavlm-large/layer-24/dev-clean.h5",
     ],
     codebook_path="wavlm-large-layer-24-kmeans-500-centroids.npy",
-    dpdp_lmbda=0.0,
+    dpdp_lmbda=2**18,
     dpdp_num_neighbors=5,
     dedupe_tokens=True,
     betas=(0.9, 0.95),

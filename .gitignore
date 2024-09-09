@@ -3,6 +3,7 @@ __pycache__
 
 logs/
 checkpoints/
+pretrained/
 
 test/
 test_*.py
