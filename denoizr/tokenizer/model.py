@@ -1,9 +1,11 @@
+import shutil
 from pathlib import Path
 
 import torch
 import torch.nn as nn
 from xformers.ops.fmha.attn_bias import BlockDiagonalCausalMask
 
+from denoizr.hashing import generate_sha256
 from denoizr.transformer import TransformerModel
 
 from .config import TokenizerModelArgs
@@ -37,12 +39,19 @@ class TokenizerModel(nn.Module):
     def save_checkpoint(self, output_dir: str):
         output_dir = Path(output_dir)
         assert output_dir.exists(), output_dir
-        config_path = output_dir / "model_config.json"
-        checkpoint_path = output_dir / "best.pth"
-        assert not config_path.exists(), config_path
-        assert not checkpoint_path.exists(), checkpoint_path
+        config_path_no_hash = output_dir / "model_config.json"
+        checkpoint_path_no_hash = output_dir / "best.pth"
+        self.config.save(config_path_no_hash)
+        torch.save(self.state_dict(), checkpoint_path_no_hash)
+        config_hash = generate_sha256(config_path_no_hash)
+        checkpoint_hash = generate_sha256(checkpoint_path_no_hash)
+        # truncate the hash to 8 characters
+        config_path = output_dir / f"model_config-{config_hash[:8]}.json"
+        checkpoint_path = output_dir / f"best-{checkpoint_hash[:8]}.pth"
         self.config.save(config_path)
         torch.save(self.state_dict(), checkpoint_path)
+        config_path_no_hash.unlink()
+        checkpoint_path_no_hash.unlink()
 
     @property
     def device(self):
@@ -51,8 +60,8 @@ class TokenizerModel(nn.Module):
     @classmethod
     def from_model_dir(cls, model_dir: str):
         model_dir = Path(model_dir)
-        config_path = model_dir / "model_config.json"
-        checkpoint_path = model_dir / "best.pth"
+        config_path = next(model_dir.glob("model_config-*.json"))
+        checkpoint_path = next(model_dir.glob("best-*.pth"))
         assert config_path.exists(), config_path
         assert checkpoint_path.exists(), checkpoint_path
         config = TokenizerModelArgs.load(config_path)
