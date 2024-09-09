@@ -7,7 +7,7 @@ from torch.nn.modules.utils import consume_prefix_in_state_dict_if_present
 from denoizr.tokenizer import TokenizerModel, TokenizerModelArgs
 
 
-def _tokenizer(
+def tokenizer(
     tag: str,
     progress: bool = True,
 ) -> TokenizerModel:
@@ -27,12 +27,3 @@ def _tokenizer(
     )
     model.load_state_dict(checkpoint)
     return model
-
-
-def tokenizer(tag=str, progress: bool = True) -> TokenizerModel:
-    return torch.hub.load(
-        f"nicolvisser/denoising-tokenizer:{tag}",
-        "_tokenizer",
-        tag=tag,
-        trust_repo=True,
-    )
