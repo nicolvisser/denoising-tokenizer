@@ -2,7 +2,6 @@ dependencies = ["torch", "torchaudio", "xformers", "simple_parsing"]
 
 import requests
 import torch
-from torch.nn.modules.utils import consume_prefix_in_state_dict_if_present
 
 from denoizr.tokenizer import TokenizerModel, TokenizerModelArgs
 
